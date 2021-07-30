@@ -458,7 +458,7 @@ contract Ownable is Context {
     /**
      * @dev Returns the address of the current owner.
      */
-    function owner() public view returns (address) {
+    function owner() external view returns (address) {
         return _owner;
     }
 
@@ -477,7 +477,7 @@ contract Ownable is Context {
      * NOTE: Renouncing ownership will leave the contract without an owner,
      * thereby removing any functionality that is only available to the owner.
      */
-    function renounceOwnership() public virtual onlyOwner {
+    function renounceOwnership() external virtual onlyOwner {
         emit OwnershipTransferred(_owner, address(0));
         _owner = address(0);
     }
@@ -486,7 +486,7 @@ contract Ownable is Context {
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      * Can only be called by the current owner.
      */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
+    function transferOwnership(address newOwner) external virtual onlyOwner {
         require(newOwner != address(0), "Ownable: new owner is the zero address");
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
@@ -579,29 +579,29 @@ contract Art is Ownable,ReentrancyGuard {
   event withdrawRewardLog(address indexed user,uint256 amount,uint256 time);
   event IntroLog(address indexed user,uint256 amount,uint256 time,address indexed intro);
   
-  function  setOpenGetTime( uint256 _openGetTime) public onlyOwner{
+  function  setOpenGetTime( uint256 _openGetTime) external onlyOwner{
       openGetTime = _openGetTime;
   }
   
-  function  setUsdtAddress( address _usdtAddress) public onlyOwner{
+  function  setUsdtAddress( address _usdtAddress) external onlyOwner{
       usdtAddress = _usdtAddress;
   }
-  function  setTokenAddress( address _tokenAddress) public onlyOwner{
+  function  setTokenAddress( address _tokenAddress) external onlyOwner{
       tokenAddress = _tokenAddress;
   }
-  function  setReceiveAddress( address _receiveAddress) public onlyOwner{
+  function  setReceiveAddress( address _receiveAddress) external onlyOwner{
       receiveAddress = _receiveAddress;
   }
-  function  setPrice( uint256 _price) public onlyOwner{
+  function  setPrice( uint256 _price) external onlyOwner{
       price = _price;
   }
-  function  setMinnum( uint256 _minnum) public onlyOwner{
+  function  setMinnum( uint256 _minnum) external onlyOwner{
       minnum = _minnum;
   }
-  function  setMaxnum( uint256 _maxnum) public onlyOwner{
+  function  setMaxnum( uint256 _maxnum) external onlyOwner{
       maxnum = _maxnum;
   }
-  function  setRecRatio( uint256 _recRatio) public onlyOwner{
+  function  setRecRatio( uint256 _recRatio) external onlyOwner{
       recRatio = _recRatio;
   }
   
@@ -609,7 +609,7 @@ contract Art is Ownable,ReentrancyGuard {
     /* 
    * 投资
   */ 
-  function invest (uint256 amount, address intro) public  nonReentrant {
+  function invest (uint256 amount, address intro) external  nonReentrant {
     require(haveBuyAmount != totalAmount,'预售已经结束');
     require(amount > 0,'购买数量必须大于0');
     require(amount >= minnum,'起步购买1份');
@@ -636,7 +636,7 @@ contract Art is Ownable,ReentrancyGuard {
     emit InvestLog(msg.sender,amount,block.timestamp,intro);
   }
   
-  function withdrawToken()public nonReentrant{
+  function withdrawToken()external nonReentrant{
       //require(haveBuyAmount == totalAmount,'预售尚未结束');
       require(openGetTime<now,'尚未开放领取');
       uint256 amount = userCount[msg.sender];
@@ -646,7 +646,7 @@ contract Art is Ownable,ReentrancyGuard {
       emit withdrawTokenLog(msg.sender,amount,block.timestamp);
   }
   
-  function withdrawReward()public nonReentrant{
+  function withdrawReward()external nonReentrant{
       //require(haveBuyAmount == totalAmount,'预售尚未结束');
       require(openGetTime<now,'尚未开放领取');
       uint256 amount = introRewards[msg.sender];

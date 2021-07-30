@@ -430,7 +430,7 @@ contract Ownable is Context {
      * NOTE: Renouncing ownership will leave the contract without an owner,
      * thereby removing any functionality that is only available to the owner.
      */
-    function renounceOwnership() public virtual onlyOwner {
+    function renounceOwnership() external virtual onlyOwner {
         emit OwnershipTransferred(_owner, address(0));
         _owner = address(0);
     }
@@ -439,18 +439,18 @@ contract Ownable is Context {
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      * Can only be called by the current owner.
      */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
+    function transferOwnership(address newOwner) external virtual onlyOwner {
         require(newOwner != address(0), "Ownable: new owner is the zero address");
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
 
-    function geUnlockTime() public view returns (uint256) {
+    function geUnlockTime() external view returns (uint256) {
         return _lockTime;
     }
 
     //Locks the contract for owner for the amount of time provided
-    function lock(uint256 time) public virtual onlyOwner {
+    function lock(uint256 time) external virtual onlyOwner {
         _previousOwner = _owner;
         _owner = address(0);
         _lockTime = now + time;
@@ -458,7 +458,7 @@ contract Ownable is Context {
     }
     
     //Unlocks the contract for owner when _lockTime is exceeds
-    function unlock() public virtual {
+    function unlock() external virtual {
         require(_previousOwner == msg.sender, "You don't have permission to unlock");
         require(now > _lockTime , "Contract is locked until 7 days");
         emit OwnershipTransferred(_owner, _previousOwner);
@@ -765,19 +765,19 @@ contract ARTToken is Context, IERC20, Ownable{
         emit Transfer(address(0), _msgSender(), _tTotal);
     }
 
-    function name() public view returns (string memory) {
+    function name() external view returns (string memory) {
         return _name;
     }
 
-    function symbol() public view returns (string memory) {
+    function symbol() external view returns (string memory) {
         return _symbol;
     }
 
-    function decimals() public view returns (uint8) {
+    function decimals() external view returns (uint8) {
         return _decimals;
     }
 
-    function totalSupply() public view override returns (uint256) {
+    function totalSupply() external view override returns (uint256) {
         return _tTotal;
     }
 
@@ -786,45 +786,45 @@ contract ARTToken is Context, IERC20, Ownable{
         return tokenFromReflection(_rOwned[account]);
     }
 
-    function transfer(address recipient, uint256 amount) public override returns (bool) {
+    function transfer(address recipient, uint256 amount) external override returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
 
-    function allowance(address owner, address spender) public view override returns (uint256) {
+    function allowance(address owner, address spender) external view override returns (uint256) {
         return _allowances[owner][spender];
     }
 
-    function approve(address spender, uint256 amount) public override returns (bool) {
+    function approve(address spender, uint256 amount) external override returns (bool) {
         _approve(_msgSender(), spender, amount);
         return true;
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) external override returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
         return true;
     }
 
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue) external virtual returns (bool) {
         _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(addedValue));
         return true;
     }
 
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+    function decreaseAllowance(address spender, uint256 subtractedValue) external virtual returns (bool) {
         _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
         return true;
     }
 
-    function isExcludedFromReward(address account) public view returns (bool) {
+    function isExcludedFromReward(address account) external view returns (bool) {
         return _isExcluded[account];
     }
 
-    function totalFees() public view returns (uint256) {
+    function totalFees() external view returns (uint256) {
         return _tFeeTotal;
     }
 
-    function deliver(uint256 tAmount) public {
+    function deliver(uint256 tAmount) external {
         address sender = _msgSender();
         require(!_isExcluded[sender], "Excluded addresses cannot call this function");
         (uint256 rAmount,,,,,) = _getValues(tAmount);
@@ -833,7 +833,7 @@ contract ARTToken is Context, IERC20, Ownable{
         _tFeeTotal = _tFeeTotal.add(tAmount);
     }
 
-    function reflectionFromToken(uint256 tAmount, bool deductTransferFee) public view returns(uint256) {
+    function reflectionFromToken(uint256 tAmount, bool deductTransferFee) external view returns(uint256) {
         require(tAmount <= _tTotal, "Amount must be less than supply");
         if (!deductTransferFee) {
             (uint256 rAmount,,,,,) = _getValues(tAmount);
@@ -850,7 +850,7 @@ contract ARTToken is Context, IERC20, Ownable{
         return rAmount.div(currentRate);
     }
 
-    function excludeFromReward(address account) public onlyOwner() {
+    function excludeFromReward(address account) external onlyOwner() {
         // require(account != 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D, 'We can not exclude Uniswap router.');
         require(!_isExcluded[account], "Account is already excluded");
         if(_rOwned[account] > 0) {
@@ -883,11 +883,11 @@ contract ARTToken is Context, IERC20, Ownable{
         emit Transfer(sender, recipient, tTransferAmount);
     }
     
-        function excludeFromFee(address account) public onlyOwner {
+    function excludeFromFee(address account) external onlyOwner {
         _isExcludedFromFee[account] = true;
     }
     
-    function includeInFee(address account) public onlyOwner {
+    function includeInFee(address account) external onlyOwner {
         _isExcludedFromFee[account] = false;
     }
     
@@ -917,7 +917,7 @@ contract ARTToken is Context, IERC20, Ownable{
         );
     }
 
-    function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
+    function setSwapAndLiquifyEnabled(bool _enabled) external onlyOwner {
         swapAndLiquifyEnabled = _enabled;
         emit SwapAndLiquifyEnabledUpdated(_enabled);
     }
@@ -1065,7 +1065,7 @@ contract ARTToken is Context, IERC20, Ownable{
         _nftFee = _previousNftFee;
     }
     
-    function isExcludedFromFee(address account) public view returns(bool) {
+    function isExcludedFromFee(address account) external view returns(bool) {
         return _isExcludedFromFee[account];
     }
 
